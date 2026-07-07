@@ -1,9 +1,10 @@
+<!-- LUNA Nexus v2.3 Production / Empty data / GitHub Pages ready -->
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LUNA Nexus v2.0</title>
+<title>LUNA Nexus v2.3 Production</title>
 <style>
 :root {
   --bg:#F6F7FB; --card:#FFFFFF; --text:#182230; --muted:#667085; --line:#E4E7EC;
@@ -111,6 +112,23 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
 .emptyState{border:1px dashed var(--line);border-radius:18px;padding:20px;text-align:center;color:var(--muted);background:color-mix(in srgb,var(--card) 80%,var(--soft-primary))}
 @media(max-width:980px){.dash,.two,.three,.formGrid{grid-template-columns:minmax(0,1fr)}.searchbar{grid-template-columns:minmax(0,1fr)}.kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.head{padding:10px 12px}.brandBanner img{max-height:52px}main{padding:12px 10px 86px}.card{padding:14px;border-radius:22px}.dateMain,.timeMain{font-size:29px}.weekChip{font-size:15px;padding:6px 10px}.dayCell{min-height:74px;border-radius:12px;padding:5px}.monthGrid{gap:4px}input,textarea,select{font-size:16px}.infoGrid{grid-template-columns:1fr}}
+
+.quickActions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.quickAction{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:14px;text-align:center;cursor:pointer;box-shadow:0 8px 20px rgba(24,34,48,.05)}
+.quickAction:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(24,34,48,.10)}
+.qaIcon{font-size:25px}.qaText{font-size:12px;font-weight:950;margin-top:5px;color:var(--text)}
+@media(max-width:600px){.quickActions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+.rankRow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.rankNo{width:30px;height:30px;border-radius:12px;background:var(--soft-primary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:1000}
+.scorePill{font-size:12px;font-weight:950;border-radius:999px;padding:6px 9px;background:var(--soft-blue);color:var(--blue);white-space:nowrap}
+.scorePill.warn{background:var(--soft-red);color:var(--red)}
+.influenceGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.influenceCard{border:1px solid var(--line);border-radius:18px;padding:12px;background:var(--card);cursor:pointer}
+.influenceCard .avatar{margin-bottom:8px}
+@media(max-width:700px){.influenceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -152,6 +170,15 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
     <div class="welcome">おかえり、タオくん🌙</div>
     <div class="dateHero"><div class="dateMain" id="dateMain">----</div><div class="weekChip" id="weekMain">---</div><div class="timeMain" id="timeMain">--:--</div></div>
   </div>
+  <div class="card" style="margin-top:14px">
+    <h2>⚡ クイック操作</h2>
+    <div class="quickActions">
+      <div class="quickAction" onclick="setTab('condition')"><div class="qaIcon">😊</div><div class="qaText">コンディション</div></div>
+      <div class="quickAction" onclick="setTab('calendar')"><div class="qaIcon">📅</div><div class="qaText">予定/日記</div></div>
+      <div class="quickAction" onclick="setTab('todos')"><div class="qaIcon">📌</div><div class="qaText">ToDo</div></div>
+      <div class="quickAction" onclick="setTab('library')"><div class="qaIcon">📚</div><div class="qaText">ライブラリ</div></div>
+    </div>
+  </div>
   <div class="card" style="margin-top:14px"><h2>🌅 今日のサマリー</h2><div class="kpi" id="todaySummary"></div></div>
   <div class="grid two" style="margin-top:14px">
     <div class="card"><h2>📅 今日の予定</h2><div class="list" id="homeEvents"></div></div>
@@ -161,9 +188,44 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
     <div class="card"><h2>👤 今日会う人</h2><div class="list" id="todayPeople"></div></div>
     <div class="card"><h2>💜 ルナから一言</h2><div class="analysisBox" id="oneWord"></div></div>
   </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>🌟 好印象 TOP5</h2><div class="list" id="goodTopDash"></div></div>
+    <div class="card"><h2>⚠️ 悪印象/注意 TOP5</h2><div class="list" id="badTopDash"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>🧲 タオくんに影響している8人</h2>
+    <div class="list" id="influenceEightDash"></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>⚖️ 人間関係バランス</h2><div id="relationshipBalanceDash"></div></div>
+    <div class="card"><h2>🤝 ギバー / テイカー傾向</h2><div id="giverTakerDash"></div></div>
+  </div>
   <div class="grid two" style="margin-top:14px">
     <div class="card"><h2>📈 コンディション推移</h2><div id="conditionTrend"></div></div>
     <div class="card"><h2>📷 最近の写真</h2><div id="recentPhoto"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>📊 Nexus KPI</h2>
+    <div class="kpi" id="nexusKpi"></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>📖 最近の日記/ログ</h2><div class="list" id="recentLogsDash"></div></div>
+    <div class="card"><h2>📚 最近追加したライブラリ</h2><div class="list" id="recentItemsDash"></div></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>🧠 Luna Engine</h2><div class="analysisBox" id="dashBrain"></div></div>
+    <div class="card"><h2>🗓️ 今月の予定</h2><div class="list" id="monthEventsDash"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>🕰️ 最近のタイムライン</h2>
+    <div class="list" id="dashTimeline"></div>
   </div>
 </section>
 
@@ -264,7 +326,7 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
 <div class="modalWrap" id="deleteModal"><div class="modal"><div class="modalTop"><h2>⚠️ 全データ削除</h2><button class="secondary close" onclick="closeModal('deleteModal')">閉じる</button></div><div class="analysisBox" style="margin-top:14px">この操作は取り消せないよ。続行する場合は DELETE と入力してね。</div><input id="deleteText" style="margin-top:14px" placeholder="DELETE"><div class="buttons"><button class="danger" id="executeDelete" disabled>完全に削除</button><button class="secondary" onclick="closeModal('deleteModal')">キャンセル</button></div></div></div>
 
 <script>
-const KEY="luna_nexus_v2";
+const KEY="luna_nexus_v2_production";
 let db={items:[],conditions:[],events:[],todos:[],ideas:[],logs:[],links:[]};
 let editingItem=null,eventPhotoData="",calendarCursor=new Date();
 const $=id=>document.getElementById(id);
@@ -291,18 +353,170 @@ function currentCondition(){return db.conditions.find(c=>c.date===today())||db.c
 function renderClock(){const n=new Date(), ds=["日","月","火","水","木","金","土"];$("dateMain").textContent=`${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,"0")}.${String(n.getDate()).padStart(2,"0")}`;$("weekMain").textContent=`${ds[n.getDay()]}曜日`;$("timeMain").textContent=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;}
 setInterval(renderClock,1000);
 
-function renderDashboard(){const c=currentCondition();const ev=db.events.filter(e=>e.date===today());const td=db.todos.filter(t=>!t.done&&(t.due==="今日"||t.pinned));const people=[...new Set(ev.map(e=>e.target).filter(Boolean))].map(id=>db.items.find(i=>i.id===id)).filter(Boolean);
-$("onboardingCard").style.display=(db.items.length+db.events.length+db.todos.length+db.ideas.length+db.logs.length+db.conditions.length)?"none":"block";
-$("todaySummary").innerHTML=`<div class="kpiBox"><div class="kpiNum">${c?c.mood:"-"}</div><div class="kpiLabel">気分</div></div><div class="kpiBox"><div class="kpiNum">${c?c.sleep||"-":"-"}</div><div class="kpiLabel">睡眠</div></div><div class="kpiBox"><div class="kpiNum">${ev.length}</div><div class="kpiLabel">今日の予定</div></div><div class="kpiBox"><div class="kpiNum">${td.length}</div><div class="kpiLabel">ToDo</div></div>`;
-$("homeEvents").innerHTML=ev.slice(0,3).map(eventHTML).join("")||`<div class="emptyState">今日の予定はまだないよ</div>`;
-$("homeTodos").innerHTML=td.slice(0,3).map(todoHTML).join("")||`<div class="emptyState">今日のToDoはまだないよ</div>`;
-$("todayPeople").innerHTML=people.map(itemRow).join("")||`<div class="emptyState">今日会う人はまだ紐付いてないよ</div>`;
-$("oneWord").textContent=lunaOneWord();
-renderConditionTrend();renderRecentPhoto();}
-function lunaOneWord(){const c=currentCondition();if(!c)return"まずは今日のコンディションを1行だけ残してみよ🌙";if(+c.stress>=75)return"今日は勝つより、消耗しないことを優先する日だよ🌙";if(c.health==="痛みあり"||c.health==="悪い")return"今日は前進より調整。体調を守るのも戦略だよ。";if(+c.energy>=75)return"今日は小さく前に進める日。アイデアを1つ形にしよ✨";return"今日の自分を観察するだけでも、未来のルナの材料になるよ。"}
-function renderConditionTrend(){const arr=[...db.conditions].sort((a,b)=>a.date.localeCompare(b.date)).slice(-7);$("conditionTrend").innerHTML=arr.length?arr.map(c=>`<div class="row"><div>${c.date.slice(5).replace("-","/")}</div><div class="grow">${c.mood} / 睡眠${c.sleep||"-"} / ストレス${c.stress||"-"}</div></div>`).join(""):`<div class="emptyState">履歴なし</div>`}
-function renderRecentPhoto(){const e=[...db.events].filter(x=>x.photo).sort((a,b)=>b.date.localeCompare(a.date))[0];$("recentPhoto").innerHTML=e?`<img src="${e.photo}" style="width:100%;max-height:250px;object-fit:cover;border-radius:20px;cursor:pointer" onclick="openPhoto('${e.id}')"><div class="small">${esc(e.date)} / ${esc(e.title)}</div>`:`<div class="emptyState">写真付き予定/日記を入れると表示されるよ</div>`}
 
+
+function relationItems(){
+  return (db.items||[]).filter(i=>i.type==="person" || i.type==="concept" || i.type==="org");
+}
+function rankRowHTML(x, idx, score, warn=false){
+  return `<div class="rankRow" onclick="openItem('${x.id}')">
+    <div class="rankNo">${idx+1}</div>
+    <div class="grow">
+      <div class="name">${esc(x.name)}</div>
+      <div class="meta">${typeLabel(x.type)} / ${esc(x.category||"")} / ${esc(x.relation||"")}</div>
+      <div class="chips">${typeChip(x.type)}${x.mbti?`<span class="chip">${esc(x.mbti)}</span>`:""}</div>
+    </div>
+    <div class="scorePill ${warn?"warn":""}">${score}</div>
+  </div>`;
+}
+function renderRelationDashboard(){
+  if(!$("goodTopDash")) return;
+  const rel = relationItems();
+
+  const good = [...rel].sort((a,b)=>(+b.like||0)-(+a.like||0)).slice(0,5);
+  const bad = [...rel].sort((a,b)=>((+b.stress||0)+(+b.taker||0)*0.35)-((+a.stress||0)+(+a.taker||0)*0.35)).slice(0,5);
+  const influence = [...rel].sort((a,b)=>(+b.impact||0)-(+a.impact||0)).slice(0,8);
+
+  $("goodTopDash").innerHTML = good.length
+    ? good.map((x,i)=>rankRowHTML(x,i,`好感 ${x.like||0}`)).join("")
+    : `<div class="emptyState">ライブラリに人物を登録すると出るよ</div>`;
+
+  $("badTopDash").innerHTML = bad.length
+    ? bad.map((x,i)=>rankRowHTML(x,i,`注意 ${x.stress||0}`,true)).join("")
+    : `<div class="emptyState">注意ランキングはまだないよ</div>`;
+
+  $("influenceEightDash").innerHTML = influence.length
+    ? `<div class="influenceGrid">` + influence.map(x=>`
+      <div class="influenceCard" onclick="openItem('${x.id}')">
+        <div class="avatar">${x.photo?`<img src="${x.photo}">`:typeIcon(x.type)}</div>
+        <div class="name">${esc(x.name)}</div>
+        <div class="meta">${esc(x.relation||x.category||"")}</div>
+        <div class="chips"><span class="chip">影響 ${x.impact||0}</span>${x.stress>=70?`<span class="chip warn">注意</span>`:""}</div>
+      </div>`).join("") + `</div>`
+    : `<div class="emptyState">影響度が高い人物/概念が出るよ</div>`;
+
+  const avg = arr => arr.length ? Math.round(arr.reduce((s,x)=>s+(+x||0),0)/arr.length) : 0;
+  const avgLike = avg(rel.map(x=>x.like));
+  const avgStress = avg(rel.map(x=>x.stress));
+  const avgImpact = avg(rel.map(x=>x.impact));
+  const balance = Math.max(0, Math.min(100, Math.round(55 + avgLike*0.35 - avgStress*0.28 + avgImpact*0.08)));
+
+  $("relationshipBalanceDash").innerHTML =
+    scoreBar("関係バランス", balance, balance>=70?"green":balance<45?"red":"yellow") +
+    scoreBar("平均好感/価値", avgLike, "green") +
+    scoreBar("平均ストレス/リスク", avgStress, avgStress>=65?"red":"yellow") +
+    scoreBar("平均影響度", avgImpact);
+
+  const avgGiver = avg(rel.map(x=>x.giver));
+  const avgMatcher = avg(rel.map(x=>x.matcher));
+  const avgTaker = avg(rel.map(x=>x.taker));
+
+  $("giverTakerDash").innerHTML =
+    scoreBar("ギバー傾向", avgGiver, "green") +
+    scoreBar("マッチャー傾向", avgMatcher) +
+    scoreBar("テイカー傾向", avgTaker, avgTaker>=60?"red":"yellow");
+
+  const c = currentCondition();
+  const stressPeople = bad.slice(0,2).map(x=>x.name).join("、") || "なし";
+  if($("oneWord")){
+    $("oneWord").textContent = `${lunaOneWord()}
+
+今日の人間関係メモ:
+影響が強い相手は「${influence[0]?.name||"未登録"}」。
+注意したい相手は「${stressPeople}」。
+今日は全部を背負わず、関わる相手を選ぶのがコツだよ🌙`;
+  }
+}
+
+function renderDashboardRich(){
+  renderRelationDashboard();
+  if(!$("nexusKpi")) return;
+  const activeTodos=(db.todos||[]).filter(t=>!t.done);
+  const doneTodos=(db.todos||[]).filter(t=>t.done);
+  const todayEvents=(db.events||[]).filter(e=>e.date===today());
+  const photos=(db.events||[]).filter(e=>e.photo);
+  const month=new Date().toISOString().slice(0,7);
+  const monthEvents=(db.events||[]).filter(e=>(e.date||"").startsWith(month));
+  const rate=(doneTodos.length+activeTodos.length)?Math.round(doneTodos.length/(doneTodos.length+activeTodos.length)*100):0;
+  const personCount=(db.items||[]).filter(i=>i.type==="person").length;
+  const placeCount=(db.items||[]).filter(i=>i.type==="place").length;
+  const thingCount=(db.items||[]).filter(i=>i.type==="thing").length;
+
+  $("nexusKpi").innerHTML=`
+    <div class="kpiBox"><div class="kpiNum">${db.items.length}</div><div class="kpiLabel">ライブラリ</div></div>
+    <div class="kpiBox"><div class="kpiNum">${personCount}</div><div class="kpiLabel">人物</div></div>
+    <div class="kpiBox"><div class="kpiNum">${placeCount}</div><div class="kpiLabel">場所</div></div>
+    <div class="kpiBox"><div class="kpiNum">${thingCount}</div><div class="kpiLabel">モノ</div></div>
+    <div class="kpiBox"><div class="kpiNum">${todayEvents.length}</div><div class="kpiLabel">今日の予定</div></div>
+    <div class="kpiBox"><div class="kpiNum">${activeTodos.length}</div><div class="kpiLabel">未完了</div></div>
+    <div class="kpiBox"><div class="kpiNum">${rate}%</div><div class="kpiLabel">達成率</div></div>
+    <div class="kpiBox"><div class="kpiNum">${photos.length}</div><div class="kpiLabel">写真</div></div>`;
+
+  $("recentLogsDash").innerHTML=(db.logs||[]).slice(0,4).map(l=>`
+    <div class="row">
+      <div class="avatar">📖</div>
+      <div class="grow"><div class="name">${esc(itemName(l.target)||"ログ")}</div><div class="meta">${esc(l.date)} / ${esc(l.mood||"")}</div><div class="small">${esc(l.memo||"")}</div></div>
+    </div>`).join("") || `<div class="emptyState">ログなし</div>`;
+
+  $("recentItemsDash").innerHTML=[...(db.items||[])]
+    .sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""))
+    .slice(0,4)
+    .map(itemRow).join("") || `<div class="emptyState">ライブラリなし</div>`;
+
+  const s=brainState();
+  $("dashBrain").textContent=`${lunaOneWord()}
+
+コンディション: ${Math.round(s.cond)}
+関係バランス: ${Math.round(s.relation)}
+生産性: ${Math.round(s.productivity)}
+アイデア熱量: ${Math.round(s.idea)}
+回復必要度: ${Math.round(s.recovery)}`;
+
+  $("monthEventsDash").innerHTML=monthEvents
+    .sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))
+    .slice(0,5).map(eventHTML).join("") || `<div class="emptyState">今月の予定なし</div>`;
+
+  $("dashTimeline").innerHTML=timelineItems().slice(0,8).map(x=>`
+    <div class="timelineItem">
+      <div><div class="timelineDate">${esc(x.date)}</div><div class="timelineType">${x.icon}</div></div>
+      <div><div class="timelineTitle">${esc(x.title)}</div><div class="timelineBody">${esc(x.body||"")}</div></div>
+    </div>`).join("") || `<div class="emptyState">タイムラインなし</div>`;
+}
+
+function renderDashboard(){
+  const c=currentCondition();
+  const ev=(db.events||[]).filter(e=>e.date===today()).sort((a,b)=>(a.start||"").localeCompare(b.start||""));
+  const td=(db.todos||[]).filter(t=>!t.done&&(t.due==="今日"||t.pinned));
+  const people=[...new Set(ev.map(e=>e.target).filter(Boolean))]
+    .map(id=>(db.items||[]).find(i=>i.id===id))
+    .filter(Boolean);
+
+  const dataCount=(db.items||[]).length+(db.events||[]).length+(db.todos||[]).length+(db.ideas||[]).length+(db.logs||[]).length+(db.conditions||[]).length;
+  $("onboardingCard").style.display=dataCount?"none":"block";
+
+  $("todaySummary").innerHTML=`
+    <div class="kpiBox"><div class="kpiNum">${c?esc(c.mood):"未入力"}</div><div class="kpiLabel">気分</div></div>
+    <div class="kpiBox"><div class="kpiNum">${c?(c.sleep||"-"):"-"}</div><div class="kpiLabel">睡眠</div></div>
+    <div class="kpiBox"><div class="kpiNum">${ev.length}</div><div class="kpiLabel">今日の予定</div></div>
+    <div class="kpiBox"><div class="kpiNum">${td.length}</div><div class="kpiLabel">今日のToDo</div></div>`;
+
+  $("homeEvents").innerHTML=ev.length
+    ? ev.slice(0,3).map(eventHTML).join("")
+    : `<div class="emptyState">今日の予定はまだないよ<br><button style="margin-top:10px" onclick="setTab('calendar')">予定を追加</button></div>`;
+
+  $("homeTodos").innerHTML=td.length
+    ? td.slice(0,3).map(todoHTML).join("")
+    : `<div class="emptyState">今日のToDoはまだないよ<br><button style="margin-top:10px" onclick="setTab('todos')">ToDoを追加</button></div>`;
+
+  $("todayPeople").innerHTML=people.length
+    ? people.map(itemRow).join("")
+    : `<div class="emptyState">今日会う人はまだ紐付いてないよ<br><button style="margin-top:10px" onclick="setTab('library')">ライブラリを登録</button></div>`;
+
+  $("oneWord").textContent=lunaOneWord();
+  renderConditionTrend();
+  renderRecentPhoto();
+  renderDashboardRich();
+}
 function itemRow(x){return `<div class="row" onclick="openItem('${x.id}')"><div class="avatar">${x.photo?`<img src="${x.photo}">`:typeIcon(x.type)}</div><div class="grow"><div class="name">${esc(x.name)}</div><div class="meta">${esc(x.relation||x.met||"")}</div><div class="chips">${typeChip(x.type)}${x.mbti?`<span class="chip">${esc(x.mbti)}</span>`:""}<span class="chip">影響 ${x.impact||0}</span></div></div></div>`}
 function renderLibrary(){let q=$("libQ").value.toLowerCase(),f=$("libFilter").value,arr=[...db.items].filter(x=>[x.name,x.category,x.relation,x.met,x.features,x.notes,(x.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));if(f!="all")arr=arr.filter(x=>x.type===f);let s=$("libSort").value;if(s==="impact")arr.sort((a,b)=>(b.impact||0)-(a.impact||0));else if(s==="stress")arr.sort((a,b)=>(b.stress||0)-(a.stress||0));else if(s==="name")arr.sort((a,b)=>a.name.localeCompare(b.name,"ja"));else arr.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));$("libList").innerHTML=arr.map(itemRow).join("")||`<div class="emptyState">該当なし</div>`;refreshSelects();}
 ["libQ","libFilter","libSort"].forEach(id=>$(id).oninput=renderLibrary);
@@ -355,18 +569,50 @@ function renderSearch(){let q=$("globalSearchQ").value.toLowerCase().trim();if(!
 $("globalSearchQ").oninput=renderSearch;
 function renderStats(){$("statsKpi").innerHTML=`<div class="kpiBox"><div class="kpiNum">${db.items.length}</div><div class="kpiLabel">ライブラリ</div></div><div class="kpiBox"><div class="kpiNum">${db.events.length}</div><div class="kpiLabel">予定/日記</div></div><div class="kpiBox"><div class="kpiNum">${db.todos.filter(t=>t.done).length}/${db.todos.length}</div><div class="kpiLabel">ToDo</div></div><div class="kpiBox"><div class="kpiNum">${db.conditions.length}</div><div class="kpiLabel">コンディション</div></div>`;$("statsLib").innerHTML=Object.entries(db.items.reduce((a,i)=>(a[typeLabel(i.type)]=(a[typeLabel(i.type)]||0)+1,a),{})).map(([k,v])=>scoreBar(k,v*10)).join("")||`<div class="emptyState">なし</div>`;$("statsProductivity").innerHTML=scoreBar("ToDo達成率",db.todos.length?db.todos.filter(t=>t.done).length/db.todos.length*100:0,"green");}
 
-function lunaPayload(){return{meta:{app:"LUNA Nexus v2.0",generatedAt:new Date().toISOString(),theme:$("lunaTheme").value},items:db.items,conditions:db.conditions.slice(0,30),events:db.events.slice(0,30),todos:db.todos.filter(t=>!t.done),ideas:db.ideas.slice(0,30),logs:db.logs.slice(0,30),links:db.links,analysis:$("brainReport").textContent||"",question:$("lunaQuestion").value}}
+function lunaPayload(){return{meta:{app:"LUNA Nexus v2.3",generatedAt:new Date().toISOString(),theme:$("lunaTheme").value},items:db.items,conditions:db.conditions.slice(0,30),events:db.events.slice(0,30),todos:db.todos.filter(t=>!t.done),ideas:db.ideas.slice(0,30),logs:db.logs.slice(0,30),links:db.links,analysis:$("brainReport").textContent||"",question:$("lunaQuestion").value}}
 $("generateLunaPrompt").onclick=()=>{$("lunaPromptOutput").textContent=`あなたはルナです。以下のLUNA Nexusデータを踏まえて、タオくんに具体的にアドバイスしてください。\n\n${JSON.stringify(lunaPayload(),null,2)}`;};$("copyLunaPrompt").onclick=async()=>{if(!$("lunaPromptOutput").textContent)$("generateLunaPrompt").click();await navigator.clipboard.writeText($("lunaPromptOutput").textContent);alert("コピーしたよ");}
 
 function renderSettings(){let kb=Math.round(new Blob([JSON.stringify(db)]).size/1024);$("settingsStats").textContent=`ライブラリ: ${db.items.length}件\n予定/日記: ${db.events.length}件\nToDo: ${db.todos.length}件\nアイデア: ${db.ideas.length}件\nログ: ${db.logs.length}件\nコンディション: ${db.conditions.length}件\n関係リンク: ${db.links.length}件\nサイズ: 約${kb}KB`;}
 function applyTheme(t){document.body.classList.remove("theme-ocean","theme-sakura","theme-midnight","theme-forest","theme-sunset");if(t)document.body.classList.add(t);localStorage.setItem("luna_theme_v2",t||"");$("themeSelect").value=t||"";}
 $("themeSelect").onchange=e=>applyTheme(e.target.value);
 $("exportBackup").onclick=()=>{let blob=new Blob([JSON.stringify({app:"LUNA Nexus",version:"2.0",exportedAt:new Date().toISOString(),data:db},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`luna_nexus_backup_${today()}.json`;a.click();URL.revokeObjectURL(a.href);}
-$("importBtn").onclick=()=>$("importFile").click();$("importFile").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let p=JSON.parse(r.result),d=p.data||p;if(d.people&&!d.items){d.items=d.people.map(x=>({...x,type:x.type||"person"}));}db={items:d.items||[],conditions:d.conditions||[],events:d.events||[],todos:d.todos||[],ideas:d.ideas||[],logs:d.logs||[],links:d.links||[]};save();renderAll();alert("読み込んだよ");};r.readAsText(f);}
+$("importBtn").onclick=()=>$("importFile").click();$("importFile").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let p=JSON.parse(r.result),d=p.data||p;if(d.people&&!d.items){d.items=d.people.map(x=>({...x,type:x.type||"person"}));}
+if(d.condition && !(d.conditions&&d.conditions.length)){
+  d.conditions=[{
+    date:d.condition.date||today(),
+    mood:d.condition.mood||"普通",
+    health:d.condition.health||"普通",
+    sleep:d.condition.sleep||"",
+    focus:d.condition.focus||"",
+    energy:d.condition.energy||"",
+    stress:d.condition.stress||"",
+    outing:d.condition.outing||"未入力",
+    note:d.condition.note||"",
+    updatedAt:d.condition.updatedAt||new Date().toISOString()
+  }];
+}
+db={items:d.items||[],conditions:d.conditions||[],events:d.events||[],todos:d.todos||[],ideas:d.ideas||[],logs:d.logs||[],links:d.links||[]};save();renderAll();alert("読み込んだよ");};r.readAsText(f);}
 $("exportCSV").onclick=()=>{let rows=[["type","date","title","body"].join(",")];timelineItems().forEach(x=>rows.push([x.type,x.date,x.title,x.body].map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")));let blob=new Blob([rows.join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`luna_nexus_${today()}.csv`;a.click();}
 $("resetBtn").onclick=()=>{$("deleteModal").classList.add("show");$("deleteText").value="";$("executeDelete").disabled=true;};$("deleteText").oninput=()=>$("executeDelete").disabled=$("deleteText").value.trim()!=="DELETE";$("executeDelete").onclick=()=>{localStorage.removeItem(KEY);db={items:[],conditions:[],events:[],todos:[],ideas:[],logs:[],links:[]};save();closeModal("deleteModal");renderAll();}
 
-function renderAll(){renderClock();renderDashboard();renderLibrary();renderConditions();renderEvents();renderTodos();renderIdeas();renderLogs();renderTimeline();renderNetwork();renderBrain();renderStats();renderSettings();refreshSelects();}
+function safe(fn){try{fn()}catch(e){console.error("LUNA render error:",e)}}
+function renderAll(){
+  renderClock();
+  safe(renderDashboard);
+  safe(renderLibrary);
+  safe(renderConditions);
+  safe(renderEvents);
+  safe(renderTodos);
+  safe(renderIdeas);
+  safe(renderLogs);
+  safe(renderTimeline);
+  safe(renderNetwork);
+  safe(renderBrain);
+  safe(renderStats);
+  safe(renderRelationDashboard);
+  safe(renderSettings);
+  safe(refreshSelects);
+}
 load();applyTheme(localStorage.getItem("luna_theme_v2")||"");renderAll();clearLib();$("condDate").value=today();$("eventDate").value=today();$("logDate").value=today();if(location.hash)setTab(location.hash.slice(1),{fromPop:true});
 </script>
 </body></html>
