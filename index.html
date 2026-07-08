@@ -129,6 +129,57 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
 .influenceCard .avatar{margin-bottom:8px}
 @media(max-width:700px){.influenceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+.miniEdit{padding:8px 10px;font-size:12px;white-space:nowrap;flex:0 0 auto}
+
+
+/* Network map mobile fit */
+.netMap{
+  height:520px;
+  overflow:hidden;
+}
+@media(max-width:700px){
+  .netMap{height:420px}
+  .netNode{
+    width:72px !important;
+    height:72px !important;
+    font-size:11px !important;
+    padding:6px !important;
+  }
+}
+
+
+.netNode{
+  word-break:break-word;
+  line-height:1.25;
+}
+
+
+/* Network scroll canvas */
+.netMap{
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;
+  height:520px;
+  background:linear-gradient(135deg,#FBFAFF,#F4F3FF);
+}
+.netCanvas{
+  position:relative;
+  width:900px;
+  height:720px;
+  min-width:900px;
+  min-height:720px;
+}
+@media(max-width:700px){
+  .netMap{height:430px}
+  .netCanvas{
+    width:860px;
+    height:680px;
+    min-width:860px;
+    min-height:680px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -231,7 +282,7 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
 
 <section id="library" class="page">
   <div class="grid two">
-    <div class="card"><h2>📚 ライブラリ登録</h2>
+    <div class="card"><h2>📚 ライブラリ登録/編集</h2><div class="small" id="editingHint">新規登録モード</div>
       <div class="formGrid">
         <div><div class="label">種別</div><select id="libType"><option value="person">👤 人物</option><option value="place">📍 場所</option><option value="thing">📦 モノ</option><option value="org">🏢 組織</option><option value="concept">💡 概念</option></select></div>
         <div><div class="label">カテゴリ</div><select id="libCategory"><option>仕事</option><option>家族</option><option>友人</option><option>場所</option><option>モノ</option><option>組織</option><option>概念</option><option>その他</option></select></div>
@@ -295,17 +346,17 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
         <div class="full"><div class="label">写真</div><div class="photoLine"><div class="preview" id="eventPhotoPreview">PHOTO</div><input type="file" id="eventPhoto" accept="image/*"></div></div>
         <div class="full"><div class="label">メモ</div><textarea id="eventMemo"></textarea></div>
       </div>
-      <div class="buttons"><button id="saveEvent">保存</button><button class="secondary" id="clearEvent">クリア</button></div>
+      <div class="buttons"><button id="saveEvent">保存</button><button class="secondary" id="clearEvent">クリア</button><button class="danger" id="deleteEventBtn" style="display:none">削除</button></div>
     </div>
     <div class="card"><h2>👀 予定/日記一覧</h2><div class="searchbar"><input id="eventQ" placeholder="検索"><select id="eventFilter"><option value="upcoming">今後</option><option value="today">今日</option><option value="past">過去</option><option value="all">全部</option></select><select id="eventSort"><option value="date">日時順</option><option value="new">新しい順</option></select></div><div class="list" id="eventList"></div></div>
   </div>
 </section>
 
-<section id="todos" class="page"><div class="grid two"><div class="card"><h2>📌 ToDo</h2><div class="formGrid"><div class="full"><div class="label">やること</div><input id="todoTitle"></div><div><div class="label">カテゴリ</div><select id="todoCategory"><option>仕事</option><option>家族</option><option>健康</option><option>アイデア</option><option>お金</option><option>趣味</option><option>その他</option></select></div><div><div class="label">期限</div><select id="todoDue"><option>今日</option><option>明日</option><option>今週</option><option>期限なし</option></select></div><div><div class="label">優先度</div><select id="todoPriority"><option>高い</option><option selected>普通</option><option>低い</option></select></div><div><div class="label">ピン留め</div><select id="todoPinned"><option value="false">しない</option><option value="true">する</option></select></div><div class="full"><div class="label">メモ</div><textarea id="todoMemo"></textarea></div></div><div class="buttons"><button id="saveTodo">保存</button><button class="secondary" id="clearTodo">クリア</button></div></div><div class="card"><h2>📋 一覧</h2><div class="searchbar"><input id="todoQ" placeholder="検索"><select id="todoFilter"><option value="active">未完了</option><option value="all">全部</option><option value="done">完了</option><option value="today">今日</option><option value="pinned">ピン留め</option></select><select id="todoSort"><option value="smart">おすすめ順</option><option value="due">期限順</option><option value="new">新しい順</option></select></div><div class="list" id="todoList"></div></div></div></section>
+<section id="todos" class="page"><div class="grid two"><div class="card"><h2>📌 ToDo</h2><div class="formGrid"><div class="full"><div class="label">やること</div><input id="todoTitle"></div><div><div class="label">カテゴリ</div><select id="todoCategory"><option>仕事</option><option>家族</option><option>健康</option><option>アイデア</option><option>お金</option><option>趣味</option><option>その他</option></select></div><div><div class="label">期限</div><select id="todoDue"><option>今日</option><option>明日</option><option>今週</option><option>期限なし</option></select></div><div><div class="label">優先度</div><select id="todoPriority"><option>高い</option><option selected>普通</option><option>低い</option></select></div><div><div class="label">ピン留め</div><select id="todoPinned"><option value="false">しない</option><option value="true">する</option></select></div><div class="full"><div class="label">メモ</div><textarea id="todoMemo"></textarea></div></div><div class="buttons"><button id="saveTodo">保存</button><button class="secondary" id="clearTodo">クリア</button><button class="danger" id="deleteTodoBtn" style="display:none">削除</button></div></div><div class="card"><h2>📋 一覧</h2><div class="searchbar"><input id="todoQ" placeholder="検索"><select id="todoFilter"><option value="active">未完了</option><option value="all">全部</option><option value="done">完了</option><option value="today">今日</option><option value="pinned">ピン留め</option></select><select id="todoSort"><option value="smart">おすすめ順</option><option value="due">期限順</option><option value="new">新しい順</option></select></div><div class="list" id="todoList"></div></div></div></section>
 
-<section id="ideas" class="page"><div class="grid two"><div class="card"><h2>💡 アイデア</h2><div class="formGrid"><div class="full"><div class="label">タイトル</div><input id="ideaTitle"></div><div><div class="label">カテゴリ</div><select id="ideaCategory"><option>企画</option><option>仕事</option><option>副業</option><option>アプリ</option><option>人生</option><option>学び</option><option>その他</option></select></div><div><div class="label">重要度</div><select id="ideaPriority"><option>普通</option><option>高い</option><option>低い</option><option>保留</option></select></div><div class="full"><div class="label">メモ</div><textarea id="ideaMemo"></textarea></div><div class="full"><div class="label">タグ</div><input id="ideaTags"></div></div><div class="buttons"><button id="saveIdea">保存</button><button class="secondary" id="clearIdea">クリア</button></div></div><div class="card"><h2>📚 一覧</h2><div class="searchbar"><input id="ideaQ" placeholder="検索"><select id="ideaFilter"><option value="all">全部</option><option>企画</option><option>仕事</option><option>副業</option><option>アプリ</option><option>人生</option><option>学び</option><option>その他</option></select><select id="ideaSort"><option value="new">新しい順</option><option value="priority">重要度</option><option value="title">タイトル</option></select></div><div class="list" id="ideaList"></div></div></div></section>
+<section id="ideas" class="page"><div class="grid two"><div class="card"><h2>💡 アイデア</h2><div class="formGrid"><div class="full"><div class="label">タイトル</div><input id="ideaTitle"></div><div><div class="label">カテゴリ</div><select id="ideaCategory"><option>企画</option><option>仕事</option><option>副業</option><option>アプリ</option><option>人生</option><option>学び</option><option>その他</option></select></div><div><div class="label">重要度</div><select id="ideaPriority"><option>普通</option><option>高い</option><option>低い</option><option>保留</option></select></div><div class="full"><div class="label">メモ</div><textarea id="ideaMemo"></textarea></div><div class="full"><div class="label">タグ</div><input id="ideaTags"></div></div><div class="buttons"><button id="saveIdea">保存</button><button class="secondary" id="clearIdea">クリア</button><button class="danger" id="deleteIdeaBtn" style="display:none">削除</button></div></div><div class="card"><h2>📚 一覧</h2><div class="searchbar"><input id="ideaQ" placeholder="検索"><select id="ideaFilter"><option value="all">全部</option><option>企画</option><option>仕事</option><option>副業</option><option>アプリ</option><option>人生</option><option>学び</option><option>その他</option></select><select id="ideaSort"><option value="new">新しい順</option><option value="priority">重要度</option><option value="title">タイトル</option></select></div><div class="list" id="ideaList"></div></div></div></section>
 
-<section id="journal" class="page"><div class="grid two"><div class="card"><h2>📖 ログ</h2><div class="formGrid"><div><div class="label">関連ライブラリ</div><select id="logTarget"><option value="">指定なし</option></select></div><div><div class="label">日付</div><input id="logDate" type="date"></div><div><div class="label">印象</div><select id="logScore"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></div><div><div class="label">気分</div><select id="logMood"><option>普通</option><option>嬉しい</option><option>疲れた</option><option>イライラ</option><option>安心</option><option>不安</option></select></div><div class="full"><div class="label">内容</div><textarea id="logMemo"></textarea></div><div class="full"><div class="label">次回</div><textarea id="logNext"></textarea></div></div><div class="buttons"><button id="saveLog">保存</button><button class="secondary" id="clearLog">クリア</button></div></div><div class="card"><h2>🕰️ 最近</h2><div class="list" id="logList"></div></div></div></section>
+<section id="journal" class="page"><div class="grid two"><div class="card"><h2>📖 ログ</h2><div class="formGrid"><div><div class="label">関連ライブラリ</div><select id="logTarget"><option value="">指定なし</option></select></div><div><div class="label">日付</div><input id="logDate" type="date"></div><div><div class="label">印象</div><select id="logScore"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></div><div><div class="label">気分</div><select id="logMood"><option>普通</option><option>嬉しい</option><option>疲れた</option><option>イライラ</option><option>安心</option><option>不安</option></select></div><div class="full"><div class="label">内容</div><textarea id="logMemo"></textarea></div><div class="full"><div class="label">次回</div><textarea id="logNext"></textarea></div></div><div class="buttons"><button id="saveLog">保存</button><button class="secondary" id="clearLog">クリア</button><button class="danger" id="deleteLogBtn" style="display:none">削除</button></div></div><div class="card"><h2>🕰️ 最近</h2><div class="list" id="logList"></div></div></div></section>
 
 <section id="timeline" class="page"><div class="card"><h2>🕰️ タイムライン</h2><div class="searchbar"><input id="timelineQ" placeholder="検索"><select id="timelineTypeFilter"><option value="all">全部</option><option value="event">予定/日記</option><option value="log">ログ</option><option value="idea">アイデア</option><option value="todo">ToDo</option><option value="condition">コンディション</option></select><select id="timelineSort"><option value="new">新しい順</option><option value="old">古い順</option></select></div><div class="list" id="timelineList"></div></div></section>
 
@@ -328,7 +379,7 @@ main{max-width:1280px;margin:auto;padding:16px 14px 90px}
 <script>
 const KEY="luna_nexus_v2_production";
 let db={items:[],conditions:[],events:[],todos:[],ideas:[],logs:[],links:[]};
-let editingItem=null,eventPhotoData="",calendarCursor=new Date();
+let editingItem=null,editingEvent=null,editingTodo=null,editingIdea=null,editingLog=null,editingLink=null,eventPhotoData="",calendarCursor=new Date();
 const $=id=>document.getElementById(id);
 const today=()=>new Date().toISOString().slice(0,10);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
@@ -517,48 +568,203 @@ function renderDashboard(){
   renderRecentPhoto();
   renderDashboardRich();
 }
-function itemRow(x){return `<div class="row" onclick="openItem('${x.id}')"><div class="avatar">${x.photo?`<img src="${x.photo}">`:typeIcon(x.type)}</div><div class="grow"><div class="name">${esc(x.name)}</div><div class="meta">${esc(x.relation||x.met||"")}</div><div class="chips">${typeChip(x.type)}${x.mbti?`<span class="chip">${esc(x.mbti)}</span>`:""}<span class="chip">影響 ${x.impact||0}</span></div></div></div>`}
+function itemRow(x){return `<div class="row" onclick="openItem('${x.id}')">
+  <div class="avatar">${x.photo?`<img src="${x.photo}">`:typeIcon(x.type)}</div>
+  <div class="grow">
+    <div class="name">${esc(x.name)}</div>
+    <div class="meta">${esc(x.relation||x.met||"")}</div>
+    <div class="chips">${typeChip(x.type)}${x.mbti?`<span class="chip">${esc(x.mbti)}</span>`:""}<span class="chip">影響 ${x.impact||0}</span></div>
+  </div>
+  <button class="secondary miniEdit" onclick="event.stopPropagation();editItem('${x.id}')">編集</button>
+</div>`}
 function renderLibrary(){let q=$("libQ").value.toLowerCase(),f=$("libFilter").value,arr=[...db.items].filter(x=>[x.name,x.category,x.relation,x.met,x.features,x.notes,(x.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));if(f!="all")arr=arr.filter(x=>x.type===f);let s=$("libSort").value;if(s==="impact")arr.sort((a,b)=>(b.impact||0)-(a.impact||0));else if(s==="stress")arr.sort((a,b)=>(b.stress||0)-(a.stress||0));else if(s==="name")arr.sort((a,b)=>a.name.localeCompare(b.name,"ja"));else arr.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));$("libList").innerHTML=arr.map(itemRow).join("")||`<div class="emptyState">該当なし</div>`;refreshSelects();}
 ["libQ","libFilter","libSort"].forEach(id=>$(id).oninput=renderLibrary);
 function collectLib(){return{id:editingItem||"i"+Date.now(),type:$("libType").value,category:$("libCategory").value,name:$("libName").value.trim(),relation:$("libRelation").value.trim(),met:$("libMet").value.trim(),mbti:$("libMbti").value,features:$("libFeatures").value.trim(),notes:$("libNotes").value.trim(),tags:$("libTags").value.split(",").map(x=>x.trim()).filter(Boolean),pinned:$("libPinned").value==="true",like:+$("libLike").value,stress:+$("libStress").value,impact:+$("libImpact").value,giver:+$("libGiver").value,matcher:+$("libMatcher").value,taker:+$("libTaker").value,ai:$("libAi").value.trim(),photo:"",createdAt:editingItem?(db.items.find(x=>x.id===editingItem)?.createdAt||new Date().toISOString()):new Date().toISOString(),updatedAt:new Date().toISOString()}}
 $("saveLib").onclick=()=>{let x=collectLib();if(!x.name)return alert("名前を入れてね");if(editingItem)db.items=db.items.map(i=>i.id===editingItem?x:i);else db.items.unshift(x);save();clearLib();renderAll();}
-function clearLib(){editingItem=null;["libName","libRelation","libMet","libFeatures","libNotes","libTags","libAi"].forEach(id=>$(id).value="");$("libType").value="person";$("libCategory").value="仕事";$("libMbti").value="";$("libPinned").value="false";$("libLike").value=60;$("libStress").value=25;$("libImpact").value=50;$("libGiver").value=50;$("libMatcher").value=50;$("libTaker").value=30;$("deleteLib").style.display="none";}
+function clearLib(){editingItem=null;["libName","libRelation","libMet","libFeatures","libNotes","libTags","libAi"].forEach(id=>$(id).value="");$("libType").value="person";$("libCategory").value="仕事";$("libMbti").value="";$("libPinned").value="false";$("libLike").value=60;$("libStress").value=25;$("libImpact").value=50;$("libGiver").value=50;$("libMatcher").value=50;$("libTaker").value=30;$("deleteLib").style.display="none"; if($("editingHint"))$("editingHint").textContent="新規登録モード";}
 $("clearLib").onclick=clearLib;$("deleteLib").onclick=()=>{if(editingItem&&confirm("削除する？")){db.items=db.items.filter(x=>x.id!==editingItem);save();clearLib();renderAll();}}
-function openItem(id){const x=db.items.find(i=>i.id===id);if(!x)return;$("detailTitle").textContent=x.name;$("detailMeta").innerHTML=typeLabel(x.type)+" / "+esc(x.category);$("detailBody").innerHTML=[["種別",typeLabel(x.type)],["カテゴリ",x.category],["関係/役割",x.relation],["出会い/場所",x.met],["MBTI",x.mbti],["特徴",x.features],["メモ",x.notes],["タグ",(x.tags||[]).join(", ")],["スコア",`価値${x.like} / リスク${x.stress} / 影響${x.impact}`],["AI分析",x.ai]].map(([k,v])=>`<div class="key">${esc(k)}</div><div class="val">${esc(v||"未入力")}</div>`).join("");$("detailModal").classList.add("show")}
+function openItem(id){const x=db.items.find(i=>i.id===id);if(!x)return;$("detailTitle").textContent=x.name;$("detailMeta").innerHTML=typeLabel(x.type)+" / "+esc(x.category);$("detailBody").innerHTML=[
+["操作",`<button onclick="editItem('${x.id}');closeModal('detailModal')">✏️ 編集する</button>`],
+["種別",typeLabel(x.type)],["カテゴリ",x.category],["関係/役割",x.relation],["出会い/場所",x.met],["MBTI",x.mbti],["特徴",x.features],["メモ",x.notes],["タグ",(x.tags||[]).join(", ")],["スコア",`価値${x.like} / リスク${x.stress} / 影響${x.impact}`],["AI分析",x.ai]].map(([k,v])=>`<div class="key">${esc(k)}</div><div class="val">${k==="操作"?v:esc(v||"未入力")}</div>`).join("");$("detailModal").classList.add("show")}
 
-function renderConditions(){$("condDate").value=$("condDate").value||today();$("conditionList").innerHTML=[...db.conditions].sort((a,b)=>b.date.localeCompare(a.date)).map(c=>`<div class="row"><div class="grow"><div class="name">${esc(c.date)} / ${esc(c.mood)}</div><div class="meta">体調:${esc(c.health)} 睡眠:${esc(c.sleep)} 集中:${esc(c.focus)} ストレス:${esc(c.stress)}</div><div class="small">${esc(c.note||"")}</div></div><button class="danger" onclick="deleteCondition('${c.date}')">削除</button></div>`).join("")||`<div class="emptyState">履歴なし</div>`}
+
+function editItem(id){
+  const x=db.items.find(i=>i.id===id);
+  if(!x)return;
+  editingItem=id;
+  $("libType").value=x.type||"person";
+  $("libCategory").value=x.category||"仕事";
+  $("libName").value=x.name||"";
+  $("libRelation").value=x.relation||"";
+  $("libMet").value=x.met||"";
+  $("libMbti").value=x.mbti||"";
+  $("libFeatures").value=x.features||"";
+  $("libNotes").value=x.notes||"";
+  $("libTags").value=(x.tags||[]).join(", ");
+  $("libPinned").value=String(!!x.pinned);
+  $("libLike").value=x.like??60;
+  $("libStress").value=x.stress??25;
+  $("libImpact").value=x.impact??50;
+  $("libGiver").value=x.giver??50;
+  $("libMatcher").value=x.matcher??50;
+  $("libTaker").value=x.taker??30;
+  $("libAi").value=x.ai||"";
+  $("deleteLib").style.display="inline-flex"; if($("editingHint"))$("editingHint").textContent="編集中: "+x.name;
+  setTab("library");
+  setTimeout(()=>window.scrollTo({top:0,behavior:"smooth"}),50);
+}
+
+
+function editCondition(date){
+  const c=db.conditions.find(x=>x.date===date); if(!c)return;
+  $("condDate").value=c.date||today();$("condMood").value=c.mood||"普通";$("condHealth").value=c.health||"普通";$("condSleep").value=c.sleep||"";$("condFocus").value=c.focus||"";$("condEnergy").value=c.energy||"";$("condStress").value=c.stress||"";$("condOuting").value=c.outing||"未入力";$("condNote").value=c.note||"";
+  setTab("condition");
+}
+$("clearCondition").onclick=()=>{$("condDate").value=today();$("condMood").value="普通";$("condHealth").value="普通";["condSleep","condFocus","condEnergy","condStress","condNote"].forEach(id=>$(id).value="");$("condOuting").value="未入力";};
+
+function renderConditions(){$("condDate").value=$("condDate").value||today();$("conditionList").innerHTML=[...db.conditions].sort((a,b)=>b.date.localeCompare(a.date)).map(c=>`<div class="row"><div class="grow"><div class="name">${esc(c.date)} / ${esc(c.mood)}</div><div class="meta">体調:${esc(c.health)} 睡眠:${esc(c.sleep)} 集中:${esc(c.focus)} ストレス:${esc(c.stress)}</div><div class="small">${esc(c.note||"")}</div></div><button class="secondary miniEdit" onclick="editCondition('${c.date}')">編集</button><button class="danger miniEdit" onclick="deleteCondition('${c.date}')">削除</button></div>`).join("")||`<div class="emptyState">履歴なし</div>`}
 $("saveCondition").onclick=()=>{const c={date:$("condDate").value||today(),mood:$("condMood").value,health:$("condHealth").value,sleep:$("condSleep").value,focus:$("condFocus").value,energy:$("condEnergy").value,stress:$("condStress").value,outing:$("condOuting").value,note:$("condNote").value,updatedAt:new Date().toISOString()};db.conditions=db.conditions.filter(x=>x.date!==c.date);db.conditions.unshift(c);save();renderAll();}
 window.deleteCondition=d=>{db.conditions=db.conditions.filter(c=>c.date!==d);save();renderAll();}
 
 async function compress(file){return new Promise(res=>{let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let max=900,sc=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=img.width*sc;c.height=img.height*sc;c.getContext("2d").drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.82))};img.src=e.target.result};r.readAsDataURL(file)})}
 $("eventPhoto").onchange=async e=>{if(e.target.files[0]){eventPhotoData=await compress(e.target.files[0]);$("eventPhotoPreview").innerHTML=`<img src="${eventPhotoData}">`;}}
-function eventHTML(e){return `<div class="row" onclick="showEvent('${e.id}')"><div class="avatar">${e.photo?`<img src="${e.photo}">`:(e.date<today()?"📖":"📅")}</div><div class="grow"><div class="name">${esc(e.title)}</div><div class="meta">${esc(e.date)} ${esc(e.start||"")}〜${esc(e.end||"")} / ${esc(itemName(e.target)||"")}</div><div class="small">${esc(e.memo||"")}</div></div></div>`}
+function eventHTML(e){return `<div class="row" onclick="showEvent('${e.id}')">
+  <div class="avatar">${e.photo?`<img src="${e.photo}">`:(e.date<today()?"📖":"📅")}</div>
+  <div class="grow"><div class="name">${esc(e.title)}</div><div class="meta">${esc(e.date)} ${esc(e.start||"")}〜${esc(e.end||"")} / ${esc(itemName(e.target)||"")}</div><div class="small">${esc(e.memo||"")}</div></div>
+  <button class="secondary miniEdit" onclick="event.stopPropagation();editEvent('${e.id}')">編集</button>
+</div>`}
 function renderEvents(){$("eventDate").value=$("eventDate").value||today();let q=$("eventQ").value.toLowerCase(),f=$("eventFilter").value,arr=[...db.events].filter(e=>[e.title,e.date,e.memo,e.location,itemName(e.target)].join(" ").toLowerCase().includes(q));if(f==="today")arr=arr.filter(e=>e.date===today());if(f==="past")arr=arr.filter(e=>e.date<today());if(f==="upcoming")arr=arr.filter(e=>e.date>=today());arr.sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));if($("eventSort").value==="new")arr.reverse();$("eventList").innerHTML=arr.map(eventHTML).join("")||`<div class="emptyState">予定なし</div>`;renderMonth();}
 ["eventQ","eventFilter","eventSort"].forEach(id=>$(id).oninput=renderEvents);
-$("saveEvent").onclick=()=>{if(!$("eventTitle").value.trim())return alert("タイトルを入れてね");let e={id:"e"+Date.now(),date:$("eventDate").value||today(),start:$("eventStart").value,end:$("eventEnd").value,target:$("eventTarget").value,title:$("eventTitle").value.trim(),location:$("eventLocation").value.trim(),kind:$("eventKind").value,photo:eventPhotoData,memo:$("eventMemo").value.trim(),createdAt:new Date().toISOString()};db.events.unshift(e);eventPhotoData="";["eventTitle","eventStart","eventEnd","eventLocation","eventMemo"].forEach(id=>$(id).value="");$("eventPhotoPreview").innerHTML="PHOTO";save();renderAll();}
+$("saveEvent").onclick=()=>{
+  if(!$("eventTitle").value.trim())return alert("タイトルを入れてね");
+  const old=editingEvent?db.events.find(x=>x.id===editingEvent):null;
+  let e={id:editingEvent||"e"+Date.now(),date:$("eventDate").value||today(),start:$("eventStart").value,end:$("eventEnd").value,target:$("eventTarget").value,title:$("eventTitle").value.trim(),location:$("eventLocation").value.trim(),kind:$("eventKind").value,photo:eventPhotoData||old?.photo||"",memo:$("eventMemo").value.trim(),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(editingEvent) db.events=db.events.map(x=>x.id===editingEvent?e:x); else db.events.unshift(e);
+  clearEventForm();save();renderAll();
+}
 function showEvent(id){const e=db.events.find(x=>x.id===id);if(!e)return;$("detailTitle").textContent=e.title;$("detailMeta").textContent=`${e.date} ${e.start||""}`; $("detailBody").innerHTML=[["日付",e.date],["時間",`${e.start||""}〜${e.end||""}`],["関連",itemName(e.target)],["場所",e.location],["メモ",e.memo]].map(([k,v])=>`<div class="key">${esc(k)}</div><div class="val">${esc(v||"未入力")}</div>`).join("");$("detailModal").classList.add("show")}
 function openPhoto(id){const e=db.events.find(x=>x.id===id);if(e?.photo){$("photoImg").src=e.photo;$("photoModal").classList.add("show")}}
 function renderMonth(){if(!$("monthCalendar"))return;const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth();$("monthTitle").textContent=`${y}年 ${m+1}月`;let first=new Date(y,m,1),start=new Date(y,m,1-first.getDay()),dows=["日","月","火","水","木","金","土"];let h=dows.map(d=>`<div class="dow">${d}</div>`).join("");for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let ds=d.toISOString().slice(0,10),ev=db.events.filter(e=>e.date===ds);h+=`<div class="dayCell ${d.getMonth()!==m?"muted":""} ${ds===today()?"today":""}" onclick="$('eventDate').value='${ds}';setTab('calendar')"><div class="dayNum">${d.getDate()}</div>${ev.slice(0,2).map(e=>`<div class="eventMini">${esc(e.title)}</div>`).join("")}</div>`}$("monthCalendar").innerHTML=h;}
 $("prevMonth").onclick=()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderMonth()};$("nextMonth").onclick=()=>{calendarCursor.setMonth(calendarCursor.getMonth()+1);renderMonth()};
 
-function todoHTML(t){return `<div class="row"><div onclick="toggleTodo('${t.id}')" class="avatar">${t.done?"✓":"□"}</div><div class="grow"><div class="name">${esc(t.title)}</div><div class="meta">${esc(t.category)} / ${esc(t.due)} / ${esc(t.priority)}</div><div class="small">${esc(t.memo||"")}</div></div><button class="danger" onclick="deleteTodo('${t.id}')">削除</button></div>`}
+function todoHTML(t){return `<div class="row">
+  <div onclick="toggleTodo('${t.id}')" class="avatar">${t.done?"✓":"□"}</div>
+  <div class="grow"><div class="name">${esc(t.title)}</div><div class="meta">${esc(t.category)} / ${esc(t.due)} / ${esc(t.priority)}</div><div class="small">${esc(t.memo||"")}</div></div>
+  <button class="secondary miniEdit" onclick="editTodo('${t.id}')">編集</button>
+  <button class="danger miniEdit" onclick="deleteTodo('${t.id}')">削除</button>
+</div>`}
 function renderTodos(){let q=$("todoQ").value.toLowerCase(),f=$("todoFilter").value,arr=[...db.todos].filter(t=>[t.title,t.category,t.memo].join(" ").toLowerCase().includes(q));if(f==="active")arr=arr.filter(t=>!t.done);if(f==="done")arr=arr.filter(t=>t.done);if(f==="today")arr=arr.filter(t=>t.due==="今日"&&!t.done);if(f==="pinned")arr=arr.filter(t=>t.pinned&&!t.done);$("todoList").innerHTML=arr.map(todoHTML).join("")||`<div class="emptyState">ToDoなし</div>`}
-["todoQ","todoFilter","todoSort"].forEach(id=>$(id).oninput=renderTodos);$("saveTodo").onclick=()=>{if(!$("todoTitle").value.trim())return;db.todos.unshift({id:"t"+Date.now(),title:$("todoTitle").value.trim(),category:$("todoCategory").value,due:$("todoDue").value,priority:$("todoPriority").value,pinned:$("todoPinned").value==="true",memo:$("todoMemo").value,done:false,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});["todoTitle","todoMemo"].forEach(id=>$(id).value="");save();renderAll();}
+["todoQ","todoFilter","todoSort"].forEach(id=>$(id).oninput=renderTodos);$("saveTodo").onclick=()=>{
+  if(!$("todoTitle").value.trim())return;
+  const old=editingTodo?db.todos.find(x=>x.id===editingTodo):null;
+  const t={id:editingTodo||"t"+Date.now(),title:$("todoTitle").value.trim(),category:$("todoCategory").value,due:$("todoDue").value,priority:$("todoPriority").value,pinned:$("todoPinned").value==="true",memo:$("todoMemo").value,done:old?.done||false,createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(editingTodo) db.todos=db.todos.map(x=>x.id===editingTodo?t:x); else db.todos.unshift(t);
+  clearTodoForm();save();renderAll();
+}
 window.toggleTodo=id=>{let t=db.todos.find(x=>x.id===id);if(t){t.done=!t.done;t.updatedAt=new Date().toISOString();save();renderAll();}};window.deleteTodo=id=>{db.todos=db.todos.filter(t=>t.id!==id);save();renderAll()}
 
-function renderIdeas(){let q=$("ideaQ").value.toLowerCase(),f=$("ideaFilter").value,arr=[...db.ideas].filter(i=>[i.title,i.category,i.memo,(i.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));if(f!=="all")arr=arr.filter(i=>i.category===f);$("ideaList").innerHTML=arr.map(i=>`<div class="row"><div class="avatar">💡</div><div class="grow"><div class="name">${esc(i.title)}</div><div class="meta">${esc(i.category)} / ${esc(i.priority)}</div><div class="small">${esc(i.memo)}</div></div></div>`).join("")||`<div class="emptyState">アイデアなし</div>`}
-["ideaQ","ideaFilter","ideaSort"].forEach(id=>$(id).oninput=renderIdeas);$("saveIdea").onclick=()=>{if(!$("ideaTitle").value.trim())return;db.ideas.unshift({id:"i"+Date.now(),title:$("ideaTitle").value.trim(),category:$("ideaCategory").value,priority:$("ideaPriority").value,memo:$("ideaMemo").value,tags:$("ideaTags").value.split(",").map(x=>x.trim()).filter(Boolean),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});["ideaTitle","ideaMemo","ideaTags"].forEach(id=>$(id).value="");save();renderAll();}
+function renderIdeas(){let q=$("ideaQ").value.toLowerCase(),f=$("ideaFilter").value,arr=[...db.ideas].filter(i=>[i.title,i.category,i.memo,(i.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));if(f!=="all")arr=arr.filter(i=>i.category===f);$("ideaList").innerHTML=arr.map(i=>`<div class="row">
+  <div class="avatar">💡</div>
+  <div class="grow"><div class="name">${esc(i.title)}</div><div class="meta">${esc(i.category)} / ${esc(i.priority)}</div><div class="small">${esc(i.memo)}</div></div>
+  <button class="secondary miniEdit" onclick="editIdea('${i.id}')">編集</button>
+  <button class="danger miniEdit" onclick="deleteIdea('${i.id}')">削除</button>
+</div>`).join("")||`<div class="emptyState">アイデアなし</div>`}
+["ideaQ","ideaFilter","ideaSort"].forEach(id=>$(id).oninput=renderIdeas);$("saveIdea").onclick=()=>{
+  if(!$("ideaTitle").value.trim())return;
+  const old=editingIdea?db.ideas.find(x=>x.id===editingIdea):null;
+  const i={id:editingIdea||"i"+Date.now(),title:$("ideaTitle").value.trim(),category:$("ideaCategory").value,priority:$("ideaPriority").value,memo:$("ideaMemo").value,tags:$("ideaTags").value.split(",").map(x=>x.trim()).filter(Boolean),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(editingIdea) db.ideas=db.ideas.map(x=>x.id===editingIdea?i:x); else db.ideas.unshift(i);
+  clearIdeaForm();save();renderAll();
+}
 
-function renderLogs(){$("logDate").value=$("logDate").value||today();$("logList").innerHTML=db.logs.map(l=>`<div class="row"><div class="avatar">📖</div><div class="grow"><div class="name">${esc(l.date)} / ${esc(itemName(l.target)||"")}</div><div class="meta">${esc(l.mood)} / 印象${l.score}</div><div class="small">${esc(l.memo)}</div></div></div>`).join("")||`<div class="emptyState">ログなし</div>`}
-$("saveLog").onclick=()=>{db.logs.unshift({id:"l"+Date.now(),target:$("logTarget").value,date:$("logDate").value||today(),score:+$("logScore").value,mood:$("logMood").value,memo:$("logMemo").value,next:$("logNext").value,createdAt:new Date().toISOString()});["logMemo","logNext"].forEach(id=>$(id).value="");save();renderAll();}
+function renderLogs(){$("logDate").value=$("logDate").value||today();$("logList").innerHTML=db.logs.map(l=>`<div class="row">
+  <div class="avatar">📖</div>
+  <div class="grow"><div class="name">${esc(l.date)} / ${esc(itemName(l.target)||"")}</div><div class="meta">${esc(l.mood)} / 印象${l.score}</div><div class="small">${esc(l.memo)}</div></div>
+  <button class="secondary miniEdit" onclick="editLog('${l.id}')">編集</button>
+  <button class="danger miniEdit" onclick="deleteLog('${l.id}')">削除</button>
+</div>`).join("")||`<div class="emptyState">ログなし</div>`}
+$("saveLog").onclick=()=>{
+  const old=editingLog?db.logs.find(x=>x.id===editingLog):null;
+  const l={id:editingLog||"l"+Date.now(),target:$("logTarget").value,date:$("logDate").value||today(),score:+$("logScore").value,mood:$("logMood").value,memo:$("logMemo").value,next:$("logNext").value,createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(editingLog) db.logs=db.logs.map(x=>x.id===editingLog?l:x); else db.logs.unshift(l);
+  clearLogForm();save();renderAll();
+}
 
 function timelineItems(){let a=[];db.events.forEach(e=>a.push({type:"event",date:e.date,icon:e.date<today()?"📖":"📅",title:e.title,body:e.memo}));db.logs.forEach(l=>a.push({type:"log",date:l.date,icon:"📝",title:itemName(l.target)||"ログ",body:l.memo}));db.ideas.forEach(i=>a.push({type:"idea",date:(i.createdAt||"").slice(0,10),icon:"💡",title:i.title,body:i.memo}));db.todos.forEach(t=>a.push({type:"todo",date:(t.createdAt||"").slice(0,10),icon:t.done?"✅":"📌",title:t.title,body:t.memo}));db.conditions.forEach(c=>a.push({type:"condition",date:c.date,icon:"😊",title:`コンディション: ${c.mood}`,body:`体調${c.health} 睡眠${c.sleep} ストレス${c.stress}`}));return a.sort((x,y)=>y.date.localeCompare(x.date));}
 function renderTimeline(){let q=$("timelineQ").value.toLowerCase(),f=$("timelineTypeFilter").value,arr=timelineItems().filter(x=>[x.title,x.body,x.date].join(" ").toLowerCase().includes(q));if(f!=="all")arr=arr.filter(x=>x.type===f);if($("timelineSort").value==="old")arr.reverse();$("timelineList").innerHTML=arr.map(x=>`<div class="timelineItem"><div><div class="timelineDate">${esc(x.date)}</div><div class="timelineType">${x.icon}</div></div><div><div class="timelineTitle">${esc(x.title)}</div><div class="timelineBody">${esc(x.body||"")}</div></div></div>`).join("")||`<div class="emptyState">なし</div>`}
 ["timelineQ","timelineTypeFilter","timelineSort"].forEach(id=>$(id).oninput=renderTimeline);
 
 function refreshSelects(){let opts=`<option value="">指定なし</option>`+db.items.map(i=>`<option value="${i.id}">${esc(typeIcon(i.type)+" "+i.name)}</option>`).join("");["eventTarget","logTarget","linkA","linkB"].forEach(id=>{if($(id))$(id).innerHTML= id.startsWith("link")?opts.replace("指定なし","選択"):opts;})}
-function renderNetwork(){if(!$("networkMap"))return;let map=$("networkMap");map.innerHTML="";let nodes=[{id:"__me__",name:"タオ",me:true},...db.items],w=map.clientWidth||600,h=map.clientHeight||520,cx=w/2,cy=h/2,pos={"__me__":{x:cx,y:cy}},r=Math.min(w,h)*.36;db.items.forEach((p,i)=>{let ang=Math.PI*2/Math.max(db.items.length,1)*i-Math.PI/2;pos[p.id]={x:cx+Math.cos(ang)*r,y:cy+Math.sin(ang)*r}});db.links.forEach(l=>{let a=pos[l.a],b=pos[l.b];if(!a||!b)return;let dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx),line=document.createElement("div");line.className=`netLine ${l.tone}`;line.style.left=a.x+"px";line.style.top=a.y+"px";line.style.width=len+"px";line.style.height=(2+(+l.strength||1))+"px";line.style.transform=`rotate(${ang}rad)`;map.appendChild(line)});nodes.forEach(n=>{let p=pos[n.id],d=document.createElement("div");d.className="netNode"+(n.me?" me":"");d.style.left=(p.x-43)+"px";d.style.top=(p.y-43)+"px";d.innerHTML=esc(n.name);d.onclick=()=>{if(!n.me)openItem(n.id)};map.appendChild(d)});$("networkList").innerHTML=db.links.map(l=>`<div class="row"><div class="grow"><div class="name">${esc(l.a==="__me__"?"タオ":itemName(l.a))} ↔ ${esc(l.b==="__me__"?"タオ":itemName(l.b))}</div><div class="meta">${esc(l.label)} / ${esc(l.tone)} / 強さ${l.strength}</div></div></div>`).join("")||`<div class="emptyState">リンクなし</div>`;$("networkInsight").textContent=`リンク ${db.links.length}件。人物・場所・モノ・組織・概念をつなげると、ルナが文脈を理解しやすくなるよ。`;}
-$("saveLink").onclick=()=>{if(!$("linkA").value||!$("linkB").value||$("linkA").value===$("linkB").value)return alert("2つ選んでね");db.links.push({id:"ln"+Date.now(),a:$("linkA").value,b:$("linkB").value,label:$("linkLabel").value,tone:$("linkTone").value,strength:+$("linkStrength").value,memo:$("linkMemo").value,createdAt:new Date().toISOString()});save();renderAll();}
+function renderNetwork(){
+  if(!$("networkMap"))return;
+  let map=$("networkMap");
+  map.innerHTML=`<div class="netCanvas" id="networkCanvas"></div>`;
+  let canvas=$("networkCanvas");
+
+  let nodes=[{id:"__me__",name:"タオ",me:true},...db.items];
+  let w=canvas.clientWidth||900;
+  let h=canvas.clientHeight||720;
+  let cx=w/2;
+  let cy=h/2;
+  let nodeSize=78;
+  let pos={"__me__":{x:cx,y:cy}};
+  let r=Math.min(w,h)*.36;
+
+  db.items.forEach((p,i)=>{
+    let ang=Math.PI*2/Math.max(db.items.length,1)*i-Math.PI/2;
+    pos[p.id]={x:cx+Math.cos(ang)*r,y:cy+Math.sin(ang)*r};
+  });
+
+  db.links.forEach(l=>{
+    let a=pos[l.a],b=pos[l.b];
+    if(!a||!b)return;
+    let dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx);
+    let line=document.createElement("div");
+    line.className=`netLine ${l.tone}`;
+    line.style.left=a.x+"px";
+    line.style.top=a.y+"px";
+    line.style.width=len+"px";
+    line.style.height=(2+(+l.strength||1))+"px";
+    line.style.transform=`rotate(${ang}rad)`;
+    canvas.appendChild(line);
+  });
+
+  nodes.forEach(n=>{
+    let p=pos[n.id];
+    if(!p)return;
+    let d=document.createElement("div");
+    d.className="netNode"+(n.me?" me":"");
+    d.style.left=(p.x-nodeSize/2)+"px";
+    d.style.top=(p.y-nodeSize/2)+"px";
+    d.innerHTML=esc(n.name);
+    d.onclick=()=>{if(!n.me)openItem(n.id)};
+    canvas.appendChild(d);
+  });
+
+  // 初回表示は中心が見える位置へ
+  requestAnimationFrame(()=>{
+    if(!map.dataset.centered){
+      map.scrollLeft=(canvas.scrollWidth-map.clientWidth)/2;
+      map.scrollTop=(canvas.scrollHeight-map.clientHeight)/2;
+      map.dataset.centered="1";
+    }
+  });
+
+  $("networkList").innerHTML=db.links.map(l=>`<div class="row">
+  <div class="grow"><div class="name">${esc(l.a==="__me__"?"タオ":itemName(l.a))} ↔ ${esc(l.b==="__me__"?"タオ":itemName(l.b))}</div><div class="meta">${esc(l.label)} / ${esc(l.tone)} / 強さ${l.strength}</div></div>
+  <button class="secondary miniEdit" onclick="editLink('${l.id}')">編集</button>
+  <button class="danger miniEdit" onclick="deleteLink('${l.id}')">削除</button>
+</div>`).join("")||`<div class="emptyState">リンクなし</div>`;
+
+  $("networkInsight").textContent=`リンク ${db.links.length}件。マップ内は指でスワイプして移動できるよ。人物・場所・モノ・組織・概念をつなげると、ルナが文脈を理解しやすくなるよ。`;
+}
+$("saveLink").onclick=()=>{
+  if(!$("linkA").value||!$("linkB").value||$("linkA").value===$("linkB").value)return alert("2つ選んでね");
+  const old=editingLink?db.links.find(x=>x.id===editingLink):null;
+  const l={id:editingLink||"ln"+Date.now(),a:$("linkA").value,b:$("linkB").value,label:$("linkLabel").value,tone:$("linkTone").value,strength:+$("linkStrength").value,memo:$("linkMemo").value,createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(editingLink) db.links=db.links.map(x=>x.id===editingLink?l:x); else db.links.push(l);
+  clearLinkForm();save();renderAll();
+}
 
 function scoreBar(label,val,cls=""){return `<div class="row"><div class="grow"><div class="meta">${label}</div><div class="bar"><div class="fill ${cls}" style="width:${Math.max(0,Math.min(100,Math.round(val)))}%"></div></div></div><strong>${Math.round(val)}</strong></div>`}
 function brainState(){let c=currentCondition(), cond=c?Math.max(0,Math.min(100,(+c.energy||50)-(+c.stress||0)*.3+(+c.focus||50)*.2)):50;let risk=db.items.filter(i=>(+i.stress||0)>=70).length*12;let todo=db.todos.filter(t=>!t.done).length*8;return{cond,relation:Math.max(0,80-risk),productivity:Math.max(0,cond-todo*.3),idea:Math.min(100,db.ideas.length*12),recovery:Math.max(0,100-cond)}}
@@ -571,6 +777,81 @@ function renderStats(){$("statsKpi").innerHTML=`<div class="kpiBox"><div class="
 
 function lunaPayload(){return{meta:{app:"LUNA Nexus v2.3",generatedAt:new Date().toISOString(),theme:$("lunaTheme").value},items:db.items,conditions:db.conditions.slice(0,30),events:db.events.slice(0,30),todos:db.todos.filter(t=>!t.done),ideas:db.ideas.slice(0,30),logs:db.logs.slice(0,30),links:db.links,analysis:$("brainReport").textContent||"",question:$("lunaQuestion").value}}
 $("generateLunaPrompt").onclick=()=>{$("lunaPromptOutput").textContent=`あなたはルナです。以下のLUNA Nexusデータを踏まえて、タオくんに具体的にアドバイスしてください。\n\n${JSON.stringify(lunaPayload(),null,2)}`;};$("copyLunaPrompt").onclick=async()=>{if(!$("lunaPromptOutput").textContent)$("generateLunaPrompt").click();await navigator.clipboard.writeText($("lunaPromptOutput").textContent);alert("コピーしたよ");}
+
+
+function clearEventForm(){
+  editingEvent=null;eventPhotoData="";
+  ["eventTitle","eventStart","eventEnd","eventLocation","eventMemo"].forEach(id=>$(id).value="");
+  $("eventDate").value=today();$("eventTarget").value="";$("eventKind").value="schedule";
+  $("eventPhotoPreview").innerHTML="PHOTO";$("eventPhoto").value="";
+  if($("deleteEventBtn"))$("deleteEventBtn").style.display="none";
+}
+function editEvent(id){
+  const e=db.events.find(x=>x.id===id); if(!e)return;
+  editingEvent=id;eventPhotoData=e.photo||"";
+  $("eventDate").value=e.date||today();$("eventStart").value=e.start||"";$("eventEnd").value=e.end||"";
+  $("eventTarget").value=e.target||"";$("eventTitle").value=e.title||"";$("eventLocation").value=e.location||"";
+  $("eventKind").value=e.kind||"schedule";$("eventMemo").value=e.memo||"";
+  $("eventPhotoPreview").innerHTML=e.photo?`<img src="${e.photo}">`:"PHOTO";
+  if($("deleteEventBtn"))$("deleteEventBtn").style.display="inline-flex";
+  setTab("calendar");
+}
+$("clearEvent").onclick=clearEventForm;
+if($("deleteEventBtn"))$("deleteEventBtn").onclick=()=>{if(editingEvent&&confirm("この予定/日記を削除する？")){db.events=db.events.filter(x=>x.id!==editingEvent);clearEventForm();save();renderAll();}};
+
+function clearTodoForm(){
+  editingTodo=null;["todoTitle","todoMemo"].forEach(id=>$(id).value="");
+  $("todoCategory").value="仕事";$("todoDue").value="今日";$("todoPriority").value="普通";$("todoPinned").value="false";
+  if($("deleteTodoBtn"))$("deleteTodoBtn").style.display="none";
+}
+function editTodo(id){
+  const t=db.todos.find(x=>x.id===id); if(!t)return;
+  editingTodo=id;$("todoTitle").value=t.title||"";$("todoCategory").value=t.category||"仕事";$("todoDue").value=t.due||"今日";$("todoPriority").value=t.priority||"普通";$("todoPinned").value=String(!!t.pinned);$("todoMemo").value=t.memo||"";
+  if($("deleteTodoBtn"))$("deleteTodoBtn").style.display="inline-flex";
+  setTab("todos");
+}
+$("clearTodo").onclick=clearTodoForm;
+if($("deleteTodoBtn"))$("deleteTodoBtn").onclick=()=>{if(editingTodo&&confirm("このToDoを削除する？")){db.todos=db.todos.filter(x=>x.id!==editingTodo);clearTodoForm();save();renderAll();}};
+
+function clearIdeaForm(){
+  editingIdea=null;["ideaTitle","ideaMemo","ideaTags"].forEach(id=>$(id).value="");
+  $("ideaCategory").value="企画";$("ideaPriority").value="普通";
+  if($("deleteIdeaBtn"))$("deleteIdeaBtn").style.display="none";
+}
+function editIdea(id){
+  const i=db.ideas.find(x=>x.id===id); if(!i)return;
+  editingIdea=id;$("ideaTitle").value=i.title||"";$("ideaCategory").value=i.category||"企画";$("ideaPriority").value=i.priority||"普通";$("ideaMemo").value=i.memo||"";$("ideaTags").value=(i.tags||[]).join(", ");
+  if($("deleteIdeaBtn"))$("deleteIdeaBtn").style.display="inline-flex";
+  setTab("ideas");
+}
+$("clearIdea").onclick=clearIdeaForm;
+window.deleteIdea=id=>{if(confirm("このアイデアを削除する？")){db.ideas=db.ideas.filter(x=>x.id!==id);save();renderAll();}};
+if($("deleteIdeaBtn"))$("deleteIdeaBtn").onclick=()=>{if(editingIdea&&confirm("このアイデアを削除する？")){db.ideas=db.ideas.filter(x=>x.id!==editingIdea);clearIdeaForm();save();renderAll();}};
+
+function clearLogForm(){
+  editingLog=null;["logMemo","logNext"].forEach(id=>$(id).value="");
+  $("logTarget").value="";$("logDate").value=today();$("logScore").value="3";$("logMood").value="普通";
+  if($("deleteLogBtn"))$("deleteLogBtn").style.display="none";
+}
+function editLog(id){
+  const l=db.logs.find(x=>x.id===id); if(!l)return;
+  editingLog=id;$("logTarget").value=l.target||"";$("logDate").value=l.date||today();$("logScore").value=String(l.score||3);$("logMood").value=l.mood||"普通";$("logMemo").value=l.memo||"";$("logNext").value=l.next||"";
+  if($("deleteLogBtn"))$("deleteLogBtn").style.display="inline-flex";
+  setTab("journal");
+}
+$("clearLog").onclick=clearLogForm;
+window.deleteLog=id=>{if(confirm("このログを削除する？")){db.logs=db.logs.filter(x=>x.id!==id);save();renderAll();}};
+if($("deleteLogBtn"))$("deleteLogBtn").onclick=()=>{if(editingLog&&confirm("このログを削除する？")){db.logs=db.logs.filter(x=>x.id!==editingLog);clearLogForm();save();renderAll();}};
+
+function clearLinkForm(){
+  editingLink=null;$("linkA").value="";$("linkB").value="";$("linkLabel").value="";$("linkTone").value="positive";$("linkStrength").value="3";$("linkMemo").value="";
+}
+function editLink(id){
+  const l=db.links.find(x=>x.id===id); if(!l)return;
+  editingLink=id;$("linkA").value=l.a||"";$("linkB").value=l.b||"";$("linkLabel").value=l.label||"";$("linkTone").value=l.tone||"positive";$("linkStrength").value=String(l.strength||3);$("linkMemo").value=l.memo||"";
+  setTab("network");
+}
+window.deleteLink=id=>{if(confirm("このリンクを削除する？")){db.links=db.links.filter(x=>x.id!==id);save();renderAll();}};
 
 function renderSettings(){let kb=Math.round(new Blob([JSON.stringify(db)]).size/1024);$("settingsStats").textContent=`ライブラリ: ${db.items.length}件\n予定/日記: ${db.events.length}件\nToDo: ${db.todos.length}件\nアイデア: ${db.ideas.length}件\nログ: ${db.logs.length}件\nコンディション: ${db.conditions.length}件\n関係リンク: ${db.links.length}件\nサイズ: 約${kb}KB`;}
 function applyTheme(t){document.body.classList.remove("theme-ocean","theme-sakura","theme-midnight","theme-forest","theme-sunset");if(t)document.body.classList.add(t);localStorage.setItem("luna_theme_v2",t||"");$("themeSelect").value=t||"";}
