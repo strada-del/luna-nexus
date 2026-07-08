@@ -792,6 +792,17 @@ $("saveLink").onclick=()=>{
 }
 
 function scoreBar(label,val,cls=""){return `<div class="row"><div class="grow"><div class="meta">${label}</div><div class="bar"><div class="fill ${cls}" style="width:${Math.max(0,Math.min(100,Math.round(val)))}%"></div></div></div><strong>${Math.round(val)}</strong></div>`}
+function lunaOneWord(){
+  const c=currentCondition();
+  const active=db.todos.filter(t=>!t.done);
+  const todayCount=db.events.filter(e=>e.kind!=="diary"&&e.date===today()).length;
+  if(c && (+c.stress||0)>=70) return "ストレスが高め。今日は増やすより、減らして整えるのが勝ち筋だよ。";
+  if(c && (+c.energy||0)<40) return "エネルギーが低め。最重要タスクを1つだけ終わらせれば十分だよ。";
+  if(active.length>=6) return `未完了ToDoが${active.length}件。まず上位3件に絞ると頭が軽くなるよ。`;
+  if(todayCount>=4) return `今日は予定が${todayCount}件。空き時間を守る意識が大事だよ。`;
+  if(db.ideas.length>0) return "材料はもうある。新しく増やすより、ひとつ形にする段階だよ。";
+  return "大きな警戒サインはなし。今いちばん意味のある一歩を小さく進めよう。";
+}
 function brainState(){
   const c=currentCondition();
   const cond=c?Math.max(0,Math.min(100,((+c.energy||50)+(+c.focus||50)+(+c.sleep||50))/3-(+c.stress||0)*.25)):50;
@@ -830,7 +841,21 @@ ${lunaOneWord()}
 【注目ポイント】
 ${alerts.map(x=>"・"+x).join("\n")}`;
 }
-$("runBrain").onclick=renderBrain;$("copyBrain").onclick=async()=>{renderBrain();await navigator.clipboard.writeText($("brainReport").textContent);}
+$("runBrain").onclick=()=>{
+  try{renderBrain();}
+  catch(err){
+    console.error("Luna Engine error",err);
+    $("brainReport").textContent="分析中にエラーが起きたよ。データは消えていないので、ページを再読み込みしてもう一度試してね。\n\n詳細: "+(err?.message||err);
+  }
+};
+$("copyBrain").onclick=async()=>{
+  try{
+    renderBrain();
+    const text=$("brainReport").textContent;
+    if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
+  }catch(err){console.error("copy error",err);alert("コピーできなかったよ");}
+};
 
 
 function clamp(v,min=0,max=100){return Math.max(min,Math.min(max,v));}
